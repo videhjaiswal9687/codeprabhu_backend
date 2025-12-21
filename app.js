@@ -16,7 +16,7 @@ app.use(cors({
 }));
 
 //db connection
-dbConnect(process.env.MONGO_URI);
+dbConnect();
 
 
 //routes
