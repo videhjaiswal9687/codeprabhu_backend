@@ -1,0 +1,29 @@
+import express from 'express';
+import dbConnect from './dbconnect/dbconnect.js';
+import dotenv from 'dotenv';
+import indexRoutes from './routes/indexRoute.js';
+import cors from 'cors';
+
+// Load environment variables
+dotenv.config({ path: './config/config.env' });
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: "*", // later you can restrict to your Vercel domain
+}));
+
+//db connection
+dbConnect(process.env.MONGO_URI);
+
+
+//routes
+app.use('/', indexRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+export default app; 
