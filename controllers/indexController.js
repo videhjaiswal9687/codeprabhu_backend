@@ -21,8 +21,20 @@ class IndexController {
     }
 
     static customerlist = async(req, res) => {
-        res.send('Welcome to the Index Page');
+        try {
+            const customers = await CustomerModal.find();
+       return res.status(200).json({
+            success: true,
+            customers: customers
+        });
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: "Failed to fetch customers",
+                error: error.message
+            });
+        }
     }
-}
+    }
 
 export default IndexController;
