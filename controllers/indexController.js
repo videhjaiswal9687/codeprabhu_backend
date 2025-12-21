@@ -20,13 +20,13 @@ class IndexController {
         }
     }
 
-    static customerlist = async(req, res) => {
+    static customerlist = async (req, res) => {
         try {
             const customers = await CustomerModal.find();
-       return res.status(200).json({
-            success: true,
-            customers: customers
-        });
+            return res.status(200).json({
+                success: true,
+                customers: customers
+            });
         } catch (error) {
             return res.status(400).json({
                 success: false,
@@ -35,6 +35,6 @@ class IndexController {
             });
         }
     }
-    }
+}
 
 export default IndexController;
