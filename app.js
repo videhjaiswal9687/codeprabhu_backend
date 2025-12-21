@@ -35,8 +35,5 @@ app.use(cors({
 //routes
 app.use('/', indexRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
 
 export default app; 
