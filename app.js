@@ -10,11 +10,7 @@ dotenv.config({ path: './config/config.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: "*", // later you can restrict to your Vercel domain
-}));
+
 
 //database connection
 mongoose
@@ -30,6 +26,11 @@ mongoose
     process.exit(1);
   });
 
+  app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: "*", // later you can restrict to your Vercel domain
+}));
 
 //routes
 app.use('/', indexRoutes);
