@@ -6,5 +6,7 @@ const router = express.Router();
 router.get("/customerlist",IndexController.customerlist);     
 router.post("/register", IndexController.register);  
 router.get("/exportCustomersExcel",IndexController.exportCustomersExcel); 
+router.get("/emailCustomersExcel", IndexController.emailCustomersExcel);
+
 
 export default router;
