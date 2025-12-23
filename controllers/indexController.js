@@ -1,4 +1,6 @@
 import CustomerModal from "../modal/CustomerModal.js";
+import path from "path";
+import ExcelJS from "exceljs";
 
 class IndexController {
     static register = async (req, res) => {
@@ -35,35 +37,129 @@ class IndexController {
     //         });
     //     }
     // }
-    
+
     static customerlist = async (req, res) => {
-    try {
-        const customers = await CustomerModal.aggregate([
-            {
-                $setWindowFields: {
-                    sortBy: { id: 1 }, 
-                    output: {
-                        S_No: { $documentNumber: {} }
-                    }
-                
-            }
+        try {
+            const customers = await CustomerModal.find().sort({ date: 1 });
+
+            const result = customers.map((c, index) => ({
+                S_No: index + 1,
+                name: c.name,
+                phone: c.phone,
+                email: c.email,
+                course: c.course,
+                msg: c.msg,
+                date: c.date
+            }));
+
+            res.status(200).json({
+                success: true,
+                customers: result
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
         }
-        ]);
+    };
 
-        return res.status(200).json({
-            success: true,
-            total: customers.length,
-            customers: customers
-        });
 
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: "Failed to fetch customers",
-            error: error.message
-        });
-    }
-};
+    // static exportCustomersExcel = async (req, res) => {
+    //     try {
+    //         const customers = await CustomerModal.find().sort({ date: 1 });
+
+    //         const workbook = new ExcelJS.Workbook();
+    //         const worksheet = workbook.addWorksheet("Customers");
+
+    //         worksheet.columns = [
+    //             { header: "S.No", key: "S_No", width: 8 },
+    //             { header: "Name", key: "name", width: 20 },
+    //             { header: "Phone", key: "phone", width: 15 },
+    //             { header: "Email", key: "email", width: 25 },
+    //             { header: "Course", key: "course", width: 15 },
+    //             { header: "Message", key: "msg", width: 30 },
+    //             { header: "Date", key: "date", width: 15 }
+    //         ];
+
+    //         customers.forEach((c, index) => {
+    //             worksheet.addRow({
+    //                 S_No: index + 1,
+    //                 name: c.name,
+    //                 phone: c.phone,
+    //                 email: c.email,
+    //                 course: c.course,
+    //                 msg: c.msg,
+    //                 date: c.date
+    //             });
+    //         });
+
+    //         res.setHeader(
+    //             "Content-Type",
+    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    //         );
+    //         res.setHeader(
+    //             "Content-Disposition",
+    //             "attachment; filename=customers.xlsx"
+    //         );
+
+    //         await workbook.xlsx.write(res);
+    //         res.end();
+    //     } catch (error) {
+    //         res.status(500).json({
+    //             success: false,
+    //             error: error.message
+    //         });
+    //     }
+    // };
+
+
+
+    static exportCustomersExcel = async (req, res) => {
+        try {
+            const customers = await CustomerModal.find().sort({ date: 1 });
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Customers");
+
+            worksheet.columns = [
+                { header: "S.No", key: "S_No", width: 8 },
+                { header: "Name", key: "name", width: 20 },
+                { header: "Phone", key: "phone", width: 15 },
+                { header: "Email", key: "email", width: 25 },
+                { header: "Course", key: "course", width: 15 },
+                { header: "Message", key: "msg", width: 30 },
+                { header: "Date", key: "date", width: 15 }
+            ];
+
+            customers.forEach((c, index) => {
+                worksheet.addRow({
+                    S_No: index + 1,
+                    name: c.name,
+                    phone: c.phone,
+                    email: c.email,
+                    course: c.course,
+                    msg: c.msg,
+                    date: c.date
+                });
+            });
+
+            // 📁 Server file path
+            const filePath = path.join(process.cwd(), "exports", "customers.xlsx");
+
+            // Save file on server
+            await workbook.xlsx.writeFile(filePath);
+
+            // Send file to client
+            res.download(filePath);
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    };
 
 }
 
