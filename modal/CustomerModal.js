@@ -61,21 +61,16 @@ const customerSchema = new mongoose.Schema({
 /* ================================
    AUTO-INCREMENT ID LOGIC
 ================================ */
-customerSchema.pre("save", async function (next) {
-  if (!this.isNew) return next();
+customerSchema.pre("save", async function () {
+  if (!this.isNew) return;
 
-  try {
-    const counter = await CounterModel.findByIdAndUpdate(
-      { _id: "customer_id" },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
+  const counter = await CounterModel.findByIdAndUpdate(
+    { _id: "customer_id" },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
 
-    this.id = counter.seq;
-    next();
-  } catch (error) {
-    next(error);
-  }
+  this.id = counter.seq;
 });
 
 /* ================================
