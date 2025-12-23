@@ -122,68 +122,134 @@ class IndexController {
         }
     };
 
-    static emailCustomersExcel = async (req, res) => {
-        try {
-            const customers = await CustomerModal.find().sort({ date: 1 });
+    import { Resend } from "resend";
+import ExcelJS from "exceljs";
+import CustomerModal from "../models/customer.model.js";
 
-            // Create workbook in memory
-            const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Customers");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-            worksheet.columns = [
-                { header: "S.No", key: "S_No", width: 8 },
-                { header: "Name", key: "name", width: 20 },
-                { header: "Phone", key: "phone", width: 15 },
-                { header: "Email", key: "email", width: 25 },
-                { header: "Course", key: "course", width: 15 },
-                { header: "Message", key: "msg", width: 30 },
-                { header: "Date", key: "date", width: 20 }
-            ];
+static emailCustomersExcel = async (req, res) => {
+  try {
+    const customers = await CustomerModal.find().sort({ date: 1 });
 
-            customers.forEach((c, index) => {
-                worksheet.addRow({
-                    S_No: index + 1,
-                    name: c.name,
-                    phone: c.phone,
-                    email: c.email,
-                    course: c.course,
-                    msg: c.msg,
-                    date: c.date
-                });
-            });
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Customers");
 
-            // Convert Excel to buffer (IMPORTANT)
-            const buffer = await workbook.xlsx.writeBuffer();
+    worksheet.columns = [
+      { header: "S.No", key: "S_No", width: 8 },
+      { header: "Name", key: "name", width: 20 },
+      { header: "Phone", key: "phone", width: 15 },
+      { header: "Email", key: "email", width: 25 },
+      { header: "Course", key: "course", width: 15 },
+      { header: "Message", key: "msg", width: 30 },
+      { header: "Date", key: "date", width: 20 }
+    ];
 
-            // Send email
-            await transporter.sendMail({
-                from: `"CodePrabhu" <${process.env.EMAIL_USER}>`,
-                to: "videhjaiswal@gmail.com", // change this
-                subject: "Customer List Excel",
-                text: "Please find attached customer list Excel file.",
-                attachments: [
-                    {
-                        filename: "customers.xlsx",
-                        content: buffer,
-                        contentType:
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    }
-                ]
-            });
+    customers.forEach((c, index) => {
+      worksheet.addRow({
+        S_No: index + 1,
+        name: c.name,
+        phone: c.phone,
+        email: c.email,
+        course: c.course,
+        msg: c.msg,
+        date: c.date
+      });
+    });
 
-            res.status(200).json({
-                success: true,
-                message: "Excel file emailed successfully"
-            });
+    const buffer = await workbook.xlsx.writeBuffer();
 
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Email sending failed",
-                error: error.message
-            });
+    await resend.emails.send({
+      from: "CodePrabhu <onboarding@resend.dev>",
+      to: ["videhjaiswal@gmail.com"],
+      subject: "Customer List Excel",
+      text: "Attached is the customer list Excel file.",
+      attachments: [
+        {
+          filename: "customers.xlsx",
+          content: buffer
         }
-    };
+      ]
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Excel sent successfully via email",
+      totalRecords: customers.length
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Email sending failed",
+      error: error.message
+    });
+  }
+};
+
+
+    // static emailCustomersExcel = async (req, res) => {
+    //     try {
+    //         const customers = await CustomerModal.find().sort({ date: 1 });
+
+    //         // Create workbook in memory
+    //         const workbook = new ExcelJS.Workbook();
+    //         const worksheet = workbook.addWorksheet("Customers");
+
+    //         worksheet.columns = [
+    //             { header: "S.No", key: "S_No", width: 8 },
+    //             { header: "Name", key: "name", width: 20 },
+    //             { header: "Phone", key: "phone", width: 15 },
+    //             { header: "Email", key: "email", width: 25 },
+    //             { header: "Course", key: "course", width: 15 },
+    //             { header: "Message", key: "msg", width: 30 },
+    //             { header: "Date", key: "date", width: 20 }
+    //         ];
+
+    //         customers.forEach((c, index) => {
+    //             worksheet.addRow({
+    //                 S_No: index + 1,
+    //                 name: c.name,
+    //                 phone: c.phone,
+    //                 email: c.email,
+    //                 course: c.course,
+    //                 msg: c.msg,
+    //                 date: c.date
+    //             });
+    //         });
+
+    //         // Convert Excel to buffer (IMPORTANT)
+    //         const buffer = await workbook.xlsx.writeBuffer();
+
+    //         // Send email
+    //         await transporter.sendMail({
+    //             from: `"CodePrabhu" <${process.env.EMAIL_USER}>`,
+    //             to: "videhjaiswal@gmail.com", // change this
+    //             subject: "Customer List Excel",
+    //             text: "Please find attached customer list Excel file.",
+    //             attachments: [
+    //                 {
+    //                     filename: "customers.xlsx",
+    //                     content: buffer,
+    //                     contentType:
+    //                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    //                 }
+    //             ]
+    //         });
+
+    //         res.status(200).json({
+    //             success: true,
+    //             message: "Excel file emailed successfully"
+    //         });
+
+    //     } catch (error) {
+    //         res.status(500).json({
+    //             success: false,
+    //             message: "Email sending failed",
+    //             error: error.message
+    //         });
+    //     }
+    // };
 
     // static exportCustomersExcel = async (req, res) => {
     //     try {
