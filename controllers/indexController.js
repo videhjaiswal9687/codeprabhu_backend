@@ -43,7 +43,7 @@ class IndexController {
                 $setWindowFields: {
                     sortBy: { id: 1 }, 
                     output: {
-                        Id: { $documentNumber: {} }
+                        S_No: { $documentNumber: {} }
                     }
                 
             }
