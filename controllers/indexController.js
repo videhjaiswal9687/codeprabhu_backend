@@ -155,7 +155,7 @@ class IndexController {
             // Send email
             await transporter.sendMail({
                 from: `"CodePrabhu" <${process.env.EMAIL_USER}>`,
-                to: "videhjaiswal@email.com", // change this
+                to: "videhjaiswal@gmail.com", // change this
                 subject: "Customer List Excel",
                 text: "Please find attached customer list Excel file.",
                 attachments: [
