@@ -5,5 +5,6 @@ const router = express.Router();
 // Sample route
 router.get("/customerlist",IndexController.customerlist);     
 router.post("/register", IndexController.register);  
+router.get("/exportCustomersExcel",IndexController.exportCustomersExcel); 
 
 export default router;
