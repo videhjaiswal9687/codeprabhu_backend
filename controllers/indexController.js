@@ -125,7 +125,7 @@ class IndexController {
             });
         }
     };
-    
+
     static emailCustomersExcel = async (req, res) => {
         try {
             const customers = await CustomerModal.find().sort({ date: 1 });
@@ -159,7 +159,7 @@ class IndexController {
 
             await resend.emails.send({
                 from: "CodePrabhu <onboarding@resend.dev>",
-                to: ["videhjaiswal@gmail.com"],
+                to: ["videhjaiswal@gmail.com","anuragsaini111@gmail.com"],
                 subject: "Customer List Excel",
                 text: "Attached is the customer list Excel file.",
                 attachments: [
