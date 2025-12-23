@@ -3,6 +3,9 @@ import path from "path";
 import ExcelJS from "exceljs";
 import fs from "fs";
 import transporter from "../config/email.js";
+import dotenv from 'dotenv';
+// Load environment variables
+dotenv.config({ path: './config/config.env' });
 
 class IndexController {
     static register = async (req, res) => {

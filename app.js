@@ -1,5 +1,4 @@
 import express from 'express';
-import dbConnect from './dbconnect/dbconnect.js';
 import dotenv from 'dotenv';
 import indexRoutes from './routes/indexRoute.js';
 import cors from 'cors';
