@@ -20,21 +20,49 @@ class IndexController {
         }
     }
 
+    // static customerlist = async (req, res) => {
+    //     try {
+    //         const customers = await CustomerModal.find();
+    //         return res.status(200).json({
+    //             success: true,
+    //             customers: customers
+    //         });
+    //     } catch (error) {
+    //         return res.status(400).json({
+    //             success: false,
+    //             message: "Failed to fetch customers",
+    //             error: error.message
+    //         });
+    //     }
+    // }
     static customerlist = async (req, res) => {
-        try {
-            const customers = await CustomerModal.find();
-            return res.status(200).json({
-                success: true,
-                customers: customers
-            });
-        } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message: "Failed to fetch customers",
-                error: error.message
-            });
-        }
+    try {
+        const customers = await CustomerModal.aggregate([
+            { $sort: { id: 1 } },   // keep stable order
+            {
+                $setWindowFields: {
+                    output: {
+                        displayId: { $documentNumber: {} }
+                    }
+                }
+            }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            total: customers.length,
+            customers: customers
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: "Failed to fetch customers",
+            error: error.message
+        });
     }
+};
+
 }
 
 export default IndexController;
