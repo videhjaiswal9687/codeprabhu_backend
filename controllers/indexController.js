@@ -1,7 +1,7 @@
 import CustomerModal from "../modal/CustomerModal.js";
 import path from "path";
 import ExcelJS from "exceljs";
-
+import fs from "fs";
 class IndexController {
     static register = async (req, res) => {
         const { name, phone, email, course, msg } = req.body;
@@ -114,7 +114,6 @@ class IndexController {
     // };
 
 
-
     static exportCustomersExcel = async (req, res) => {
         try {
             const customers = await CustomerModal.find().sort({ date: 1 });
@@ -129,7 +128,7 @@ class IndexController {
                 { header: "Email", key: "email", width: 25 },
                 { header: "Course", key: "course", width: 15 },
                 { header: "Message", key: "msg", width: 30 },
-                { header: "Date", key: "date", width: 15 }
+                { header: "Date", key: "date", width: 20 }
             ];
 
             customers.forEach((c, index) => {
@@ -144,22 +143,30 @@ class IndexController {
                 });
             });
 
-            // 📁 Server file path
-            const filePath = path.join(process.cwd(), "exports", "customers.xlsx");
+            // ✅ ensure exports folder exists
+            const exportDir = path.join(process.cwd(), "exports");
+            if (!fs.existsSync(exportDir)) {
+                fs.mkdirSync(exportDir);
+            }
 
-            // Save file on server
+            // ✅ full file path
+            const filePath = path.join(exportDir, "customers.xlsx");
+
+            // ✅ write file to disk
             await workbook.xlsx.writeFile(filePath);
 
-            // Send file to client
-            res.download(filePath);
+            // ✅ send file to browser
+            return res.download(filePath);
 
         } catch (error) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
+                message: "Excel export failed",
                 error: error.message
             });
         }
     };
+
 
 }
 
