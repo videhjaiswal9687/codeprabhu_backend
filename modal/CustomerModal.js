@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 const customerSchema = new mongoose.Schema({
-    id: {
-    type: Number,
-    unique: true,
-  },
+   id: {
+  type: Number,
+  unique: true,
+  sparse: true,
+  index: true
+},
     name: {
         type: String,
         required: true,
