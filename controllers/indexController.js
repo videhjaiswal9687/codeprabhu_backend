@@ -35,17 +35,19 @@ class IndexController {
     //         });
     //     }
     // }
+    
     static customerlist = async (req, res) => {
     try {
         const customers = await CustomerModal.aggregate([
-            { $sort: { id: 1 } },   // keep stable order
             {
                 $setWindowFields: {
+                    sortBy: { id: 1 }, 
                     output: {
                         displayId: { $documentNumber: {} }
                     }
-                }
+                
             }
+        }
         ]);
 
         return res.status(200).json({
