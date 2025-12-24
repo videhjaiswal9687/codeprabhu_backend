@@ -161,7 +161,7 @@ class IndexController {
             const base64File = Buffer.from(buffer).toString("base64");
 
             await resend.emails.send({
-                from: "CodePrabhu <onboarding@resend.dev>",
+                from: "CodePrabhu <www.codeprabhu.com>",
                 to: ["videhjaiswal@gmail.com", "anuragsaini111@gmail.com"],
                 subject: "Customer List Excel",
                 html: "Attached is the customer list Excel file.",
