@@ -73,7 +73,7 @@ class IndexController {
         }
     };
 
-    static exportCustomersExcel = async (req, res) => {
+    static exportsCustomersExcel = async (req, res) => {
         try {
             const customers = await CustomerModal.find().sort({ date: 1 });
 
