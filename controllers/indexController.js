@@ -157,18 +157,23 @@ class IndexController {
 
             const buffer = await workbook.xlsx.writeBuffer();
 
+            // Convert → base64
+            const base64File = Buffer.from(buffer).toString("base64");
+
             await resend.emails.send({
                 from: "CodePrabhu <onboarding@resend.dev>",
-                to: ["videhjaiswal@gmail.com","anuragsaini111@gmail.com"],
+                to: ["videhjaiswal@gmail.com", "anuragsaini111@gmail.com"],
                 subject: "Customer List Excel",
-                text: "Attached is the customer list Excel file.",
+                html: "Attached is the customer list Excel file.",
                 attachments: [
                     {
                         filename: "customers.xlsx",
-                        content: buffer
+                        content: base64File,
+                        contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     }
                 ]
             });
+
 
             return res.status(200).json({
                 success: true,
